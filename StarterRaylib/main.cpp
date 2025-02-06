@@ -1,43 +1,56 @@
-#include <iostream>
 #include <raylib.h>
 
-using namespace std;
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+#define GRAVITY 0.5f
+#define JUMP_STRENGTH -10.0f
+#define SPEED 5.0f
 
-int main () {
+typedef struct Player {
+    Rectangle rect;
+    Vector2 velocity;
+    bool isJumping;
+} Player;
 
-    const int SCREEN_WIDTH = 800;
-    const int SCREEN_HEIGHT = 600;
-    int ball_x = 100;
-    int ball_y = 100;
-    int ball_speed_x = 5;
-    int ball_speed_y = 5;
-    int ball_radius = 15;
-
-    cout << "Hello World" << endl;
-
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "My first RAYLIB program!");
+int main(void) {
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Platformer");
     SetTargetFPS(60);
 
-    while (WindowShouldClose() == false){
-   
-        ball_x += ball_speed_x;
-        ball_y += ball_speed_y;
+    // Player
+    Player player = {{100, SCREEN_HEIGHT - 150, 50, 50}, {0, 0}, false};
 
-        if(ball_x + ball_radius >= SCREEN_WIDTH || ball_x - ball_radius <= 0)
-        {
-            ball_speed_x *= -1;
+    // Floor
+    Rectangle floor = {0, SCREEN_HEIGHT - 100, SCREEN_WIDTH, 100};
+
+    while (!WindowShouldClose()) {
+        // Move left and right
+        if (IsKeyDown(KEY_A)) player.rect.x -= SPEED;
+        if (IsKeyDown(KEY_D)) player.rect.x += SPEED;
+
+        // Jump
+        if (IsKeyPressed(KEY_W) && !player.isJumping) {
+            player.velocity.y = JUMP_STRENGTH;
+            player.isJumping = true;
         }
 
-        if(ball_y + ball_radius >= SCREEN_HEIGHT || ball_y - ball_radius <= 0)
-        {
-            ball_speed_y *= -1;
+        // Gravity
+        player.velocity.y += GRAVITY;
+        player.rect.y += player.velocity.y;
+
+        // Floor collision
+        if (player.rect.y + player.rect.height >= floor.y) {
+            player.rect.y = floor.y - player.rect.height;
+            player.velocity.y = 0;
+            player.isJumping = false;
         }
-        
+
         BeginDrawing();
-            ClearBackground(BLACK);
-            DrawCircle(ball_x,ball_y,ball_radius, WHITE);
+        ClearBackground(RAYWHITE);
+        DrawRectangleRec(floor, DARKGRAY);
+        DrawRectangleRec(player.rect, BLUE);
         EndDrawing();
     }
 
     CloseWindow();
+    return 0;
 }
