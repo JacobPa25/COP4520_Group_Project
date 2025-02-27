@@ -18,6 +18,17 @@ typedef struct Player {
     bool isJumping;
 } Player;
 
+typedef struct 
+{
+    Vector2 position;
+    float radius;
+    float alpha;
+    float speed;
+    Color color;
+    
+} Particle;
+
+
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Platformer");
     SetTargetFPS(60);
@@ -28,11 +39,23 @@ int main(void) {
     // Floor
     Rectangle floor = {0, SCREEN_HEIGHT - 100, SCREEN_WIDTH, 100};
 
-    // Stores frametime and FPS
-    vector<pair<float,int>> frameData;
 
-    double startTime = GetTime(); // initialize time
-    double duration = 10.0; // duration to record FPS and frametime
+    // Test Particle
+    Color colors[14] = { ORANGE, RED, GOLD, LIME, BLUE, VIOLET, BROWN, LIGHTGRAY, PINK,
+        YELLOW, GREEN, SKYBLUE, PURPLE, BEIGE };
+
+    Particle circles[10] = { 0 };
+
+    for (int i = 10 - 1; i >= 0; i--)
+    {
+        circles[i].alpha = 0.0f;
+        circles[i].radius = 10;
+        circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
+        circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT) - circles[i].radius));
+        circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
+        circles[i].color = colors[GetRandomValue(0, 13)];
+    }
+
 
     while (!WindowShouldClose()) {
         double currentTime = GetTime();
@@ -56,14 +79,31 @@ int main(void) {
         }
 
         // Jump
-        if (IsKeyPressed(KEY_W) && !player.isJumping) {
+        if (IsKeyPressed(KEY_SPACE) && !player.isJumping) {
             player.velocity.y = JUMP_STRENGTH;
             player.isJumping = true;
+        }
+        // Spawning Particles
+        if (IsKeyPressed(KEY_P)) {
+            for (int i = 10 - 1; i >= 0; i--)
+            {
+                circles[i].alpha = 0.0f;
+                circles[i].radius = 10;
+                circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
+                circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT) - circles[i].radius));
+                circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
+                circles[i].color = colors[GetRandomValue(0, 13)];
+            }
         }
 
         // Gravity
         player.velocity.y += GRAVITY;
         player.rect.y += player.velocity.y;
+        for (int i = 10 - 1; i >= 0; i--)
+        {
+            circles[i].position.y += GRAVITY;
+
+        }
 
         // Floor collision
         if (player.rect.y + player.rect.height >= floor.y) {
@@ -71,9 +111,39 @@ int main(void) {
             player.velocity.y = 0;
             player.isJumping = false;
         }
+        for (int i = 10 - 1; i >= 0; i--){
+
+        if (circles[i].position.y + (circles[i].radius) >= floor.y) {
+            circles[i].position.y = floor.y - circles->radius;
+        }
+    }
+
+
+        // for (int i = 10 - 1; (i >= 0); i--)
+        // {
+        //     circles[i].alpha += circles[i].speed;
+        //     circles[i].radius += circles[i].speed*10.0f;
+
+        //     if (circles[i].alpha > 1.0f) circles[i].speed *= -1;
+
+        //     if (circles[i].alpha <= 0.0f)
+        //     {
+        //         circles[i].alpha = 0.0f;
+        //         circles[i].radius = 20;
+        //         circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
+        //         circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT - 100) - circles[i].radius));
+        //         circles[i].color = colors[GetRandomValue(0, 13)];
+        //         circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
+        //     }
+        // }
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        for (int i = 10 - 1; i >= 0; i--)
+        {
+            DrawCircleV(circles[i].position, circles[i].radius, (circles[i].color));
+        }
+
         DrawRectangleRec(floor, DARKGRAY);
         DrawRectangleRec(player.rect, BLUE);
         EndDrawing();
