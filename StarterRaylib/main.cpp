@@ -2,10 +2,16 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#if defined(PLATFORM_DESKTOP)
+    #define GLSL_VERSION            330
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
+    #define GLSL_VERSION            100
+#endif
 
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+
+#define SCREEN_WIDTH 1600
+#define SCREEN_HEIGHT 900
 #define GRAVITY 0.5f
 #define JUMP_STRENGTH -10.0f
 #define SPEED 5.0f
@@ -31,7 +37,6 @@ typedef struct
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Platformer");
-    SetTargetFPS(60);
 
     // Player
     Player player = {{100, SCREEN_HEIGHT - 150, 50, 50}, {0, 0}, false};
@@ -39,25 +44,38 @@ int main(void) {
     // Floor
     Rectangle floor = {0, SCREEN_HEIGHT - 100, SCREEN_WIDTH, 100};
 
-
-    // Test Particle
-    Color colors[14] = { ORANGE, RED, GOLD, LIME, BLUE, VIOLET, BROWN, LIGHTGRAY, PINK,
+    Color colors[14] = { RAYWHITE, RED, GOLD, LIME, BLUE, VIOLET, BROWN, LIGHTGRAY, PINK,
         YELLOW, GREEN, SKYBLUE, PURPLE, BEIGE };
 
-    Particle circles[10] = { 0 };
+    Particle circles[20000] = { 0 };
 
-    for (int i = 10 - 1; i >= 0; i--)
-    {
-        circles[i].alpha = 0.0f;
-        circles[i].radius = 10;
-        circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
-        circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT) - circles[i].radius));
-        circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
-        circles[i].color = colors[GetRandomValue(0, 13)];
-    }
 
+    // for (int i = 10 - 1; i >= 0; i--)
+    // {
+    //     circles[i].alpha = 0.0f;
+    //     circles[i].radius = 10;
+    //     circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
+    //     circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT) - circles[i].radius));
+    //     circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
+    //     circles[i].color = colors[GetRandomValue(0, 13)];
+    // }
+
+    // Stores frametime and FPS
+    vector<pair<float,int>> frameData;
+
+    double startTime = GetTime(); // initialize time
+    double duration = 10.0; // duration to record FPS and frametime
 
     while (!WindowShouldClose()) {
+        for (int i = 20000 - 1; i >= 0; i--)
+        {
+            circles[i].alpha = 0.0f;
+            circles[i].radius = 10;
+            circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
+            circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT) - circles[i].radius));
+            circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
+            circles[i].color = colors[0];
+        }
         double currentTime = GetTime();
 
         // exits game loop when time duration for recording is passed
@@ -77,75 +95,57 @@ int main(void) {
          if (currentTime - startTime > 1.0) {
             frameData.push_back({frameTime, fps});
         }
-
-        // Jump
-        if (IsKeyPressed(KEY_SPACE) && !player.isJumping) {
-            player.velocity.y = JUMP_STRENGTH;
-            player.isJumping = true;
-        }
-        // Spawning Particles
-        if (IsKeyPressed(KEY_P)) {
-            for (int i = 10 - 1; i >= 0; i--)
-            {
-                circles[i].alpha = 0.0f;
-                circles[i].radius = 10;
-                circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
-                circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT) - circles[i].radius));
-                circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
-                circles[i].color = colors[GetRandomValue(0, 13)];
-            }
-        }
-
-        // Gravity
-        player.velocity.y += GRAVITY;
-        player.rect.y += player.velocity.y;
         for (int i = 10 - 1; i >= 0; i--)
         {
             circles[i].position.y += GRAVITY;
 
         }
 
-        // Floor collision
+        // Jump
+        if (IsKeyPressed(KEY_W) && !player.isJumping) {
+            player.velocity.y = JUMP_STRENGTH;
+            player.isJumping = true;
+        }
+
+                // Spawning Particles
+                if (IsKeyPressed(KEY_P)) {
+                    for (int i = 10 - 1; i >= 0; i--)
+                    {
+                        circles[i].alpha = 0.0f;
+                        circles[i].radius = 10;
+                        circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
+                        circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT) - circles[i].radius));
+                        circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
+                        circles[i].color = colors[0];
+                    }
+                }
+
+        // Gravity
+        player.velocity.y += GRAVITY;
+        player.rect.y += player.velocity.y;
+
+        // Floor collision w
         if (player.rect.y + player.rect.height >= floor.y) {
             player.rect.y = floor.y - player.rect.height;
             player.velocity.y = 0;
             player.isJumping = false;
         }
-        for (int i = 10 - 1; i >= 0; i--){
 
-        if (circles[i].position.y + (circles[i].radius) >= floor.y) {
-            circles[i].position.y = floor.y - circles->radius;
-        }
-    }
-
-
-        // for (int i = 10 - 1; (i >= 0); i--)
-        // {
-        //     circles[i].alpha += circles[i].speed;
-        //     circles[i].radius += circles[i].speed*10.0f;
-
-        //     if (circles[i].alpha > 1.0f) circles[i].speed *= -1;
-
-        //     if (circles[i].alpha <= 0.0f)
-        //     {
-        //         circles[i].alpha = 0.0f;
-        //         circles[i].radius = 20;
-        //         circles[i].position.x = (float)GetRandomValue((int)circles[i].radius, (int)(SCREEN_WIDTH - circles[i].radius));
-        //         circles[i].position.y = (float)GetRandomValue((int)circles[i].radius, (int)((SCREEN_HEIGHT - 100) - circles[i].radius));
-        //         circles[i].color = colors[GetRandomValue(0, 13)];
-        //         circles[i].speed = (float)GetRandomValue(1, 100)/2000.0f;
-        //     }
-        // }
+        
 
         BeginDrawing();
+        DrawText(TextFormat("CURRENT FPS: %i", fps), GetScreenWidth() - 220, 40, 20, GREEN);
         ClearBackground(RAYWHITE);
         for (int i = 10 - 1; i >= 0; i--)
         {
             DrawCircleV(circles[i].position, circles[i].radius, (circles[i].color));
         }
+        
 
+        ClearBackground(BLACK);
         DrawRectangleRec(floor, DARKGRAY);
         DrawRectangleRec(player.rect, BLUE);
+
         EndDrawing();
     }
 
