@@ -7,7 +7,7 @@ If you want to know how to use the python scripts refer to the readme in scripts
 
 ## Examples
 
-We created two examples: Rain and Particle. These examples showcase the limitations of single threaded programming and the capabilites of multithreaded programming when the particle count and computing process reaches a breaking point.
+We created two examples: Rain and Particle. These examples showcase the limitations of single threaded programming and the capabilites of multithreaded programming when the particle count and computing processes reaches a breaking point.
 
 ## How to run the Single or Multi raylib project?
 
