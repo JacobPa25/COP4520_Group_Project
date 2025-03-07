@@ -25,7 +25,6 @@ class Player
     {
       x -= speed;
     }
-
     if(IsKeyDown(KEY_RIGHT) && x + width <= GetScreenWidth() - 50)
     {
       x += speed;
@@ -75,8 +74,9 @@ class Particle
     CheckPlayerCollide(player);
 
     KeepWithinBounds();
-}
+  }
 
+  //Keeps circles bounded within window in a way that mimics being at rest
   void KeepWithinBounds()
   {
     if(x - radius < 0)
@@ -96,11 +96,12 @@ class Particle
     }
   }
 
+  //check Collision with the player
   void CheckPlayerCollide(Player player)
   {
-    //For Player Collision
     if(CheckCollisionCircleRec(Vector2{x, y}, radius, Rectangle{player.x, player.y, player.width, player.height}))
     {
+      //X-Value collision based on current player input. Needs work
       if(IsKeyDown(KEY_LEFT))
       {
         speed_x -= player.speed;
@@ -108,6 +109,8 @@ class Particle
       { 
         speed_x += player.speed;
       }
+
+      //Normal Bounce
       speed_y *= -1;
     }
   }
@@ -120,8 +123,10 @@ int main()
   const int screen_width = 1280;
   const int screen_height = 800;
 
+  //Physics object array
   vector<Particle> objects;
 
+  //Spawn particles, allowing for some variation in size, velocity, and starting position
   for(int i = 0; i < 50; i++) 
   {
     Particle tempBall;
@@ -134,6 +139,7 @@ int main()
     objects.push_back(tempBall);
   }
 
+  //Player setup
   player.height = 50;
   player.width = 50;
   player.x = screen_width / 2;
@@ -143,12 +149,15 @@ int main()
   InitWindow(screen_width, screen_height, "2D Physics");
   SetTargetFPS(60);
 
+  //Game Loop
   while(WindowShouldClose() == false)
   {
     BeginDrawing();
     
+    //Update Player first so that objects affected by it can have the latest values
     player.Update();
 
+    //Iterate through objects to update position (CONCURRENCY TARGET)
     for(int i = 0; i < 50; i++)
     {
       objects.at(i).Update(player);
@@ -158,6 +167,7 @@ int main()
     ClearBackground(BLACK);
     player.Draw();
 
+    //Iterate through objects for drawing (CONCURRENCY TARGET)
     for(int i = 0; i < 50; i++)
     {
       objects.at(i).Draw();
