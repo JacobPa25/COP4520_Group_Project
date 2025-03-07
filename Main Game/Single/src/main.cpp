@@ -167,7 +167,7 @@ int main()
     ClearBackground(BLACK);
     player.Draw();
 
-    //Iterate through objects for drawing (CONCURRENCY TARGET)
+    //Iterate through objects for drawing (POSSIBLE CONCURRENCY TARGET)
     for(int i = 0; i < 50; i++)
     {
       objects.at(i).Draw();
