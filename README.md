@@ -11,11 +11,10 @@ We created two examples: Rain and Particle. These examples showcase the limitati
 
 ## How to run the Single or Multi raylib project?
 
-Step 1: Download the entire GitHub project and extract the files.
-Step 2: Open Single or Multi folder and double click the "main.code-workspace" file to open in VSCode
-Step 3: Inside VSCode find and click on the "main.cpp" to open the main source code
-Step 4: To run the code either press "F5" while inside "main.cpp file or press the play button in the top right corner
-	and click "Debug" or "Run"
+- Step 1: Download the entire GitHub project and extract the files.
+- Step 2: Open Single or Multi folder and double click the "main.code-workspace" file to open in VSCode
+- Step 3: Inside VSCode find and click on the "main.cpp" to open the main source code
+- Step 4: To run the code either press "F5" while inside "main.cpp file or press the play button in the top right corner and click "Debug" or "Run"
 
 The steps are the same for both version of the code. At the moment we have the code running for 30 seconds then stopping 
 and logging the frame time into a csv file which will be parsed later in our python script files.
