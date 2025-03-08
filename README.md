@@ -5,7 +5,16 @@ In order to do this we created two identical raylib projects, rain and particle,
 We are using C++ and logging the performance data in csv's which we parsed using python in order to create our graphs.
 If you want to know how to use the python scripts refer to the readme in scripts.
 
+## Current Files for grading
+- Main Game folder
+- Particle Example Folder
+- Rain Example Folder
+- Milestone Report Rough Draft pdf
+- Problem Statement markdown file
+- README markdown file
+- Goals markdown file
 
+(Prototype folder is present for testing purposes and is not meant to represent the program intended for grading)
 ## How to run the Single or Multi raylib project?
 
 - Step 1: Download the entire GitHub project and extract the files.
