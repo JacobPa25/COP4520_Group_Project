@@ -42,7 +42,7 @@ int main() {
     SetTargetFPS(0);
     InitRain();
 
-    std::ofstream fpsFile("fps_log_single.csv");
+    std::ofstream fpsFile("rain_fps_single.csv");
     fpsFile << "Time, FPS\n";
 
     double startTime = GetTime();

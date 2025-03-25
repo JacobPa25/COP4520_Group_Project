@@ -57,7 +57,7 @@ int main() {
     InitRain();
     std::thread physicsThread(UpdateRainPhysics);
 
-    std::ofstream fpsFile("fps_log_multi.csv");
+    std::ofstream fpsFile("rain_fps_multi.csv");
     fpsFile << "Time, FPS\n";
 
     double startTime = GetTime();

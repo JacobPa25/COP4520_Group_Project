@@ -53,7 +53,7 @@ int main() {
     // Frame time logging
     std::vector<std::pair<float, float>> frameTimeLog;
     auto startLoggingTime = std::chrono::high_resolution_clock::now();
-    const float loggingDuration = 20.0f; // 20 seconds
+    const float loggingDuration = 30.0f; // 30 seconds
 
     while (!WindowShouldClose()) {
         // Measure frame time
@@ -85,14 +85,14 @@ int main() {
 
         EndDrawing();
 
-        // Stop logging after 20 seconds
+        // Stop logging after 30 seconds
         if (elapsedTime >= loggingDuration) {
             break;
         }
     }
 
     // Save frame time log to CSV file
-    std::ofstream outFile("frametime_log_single.csv");
+    std::ofstream outFile("particle_frametime_single.csv");
     outFile << "Time (s),Frame Time (ms)\n";
     for (const auto& entry : frameTimeLog) {
         outFile << entry.first << "," << entry.second << "\n";
