@@ -109,7 +109,7 @@ int main() {
         DrawText("Press SPACE to switch modes", 10, 70, 20, RED);
         
         DrawText(TextFormat("CURRENT FPS: %.1f", smoothedFps), GetScreenWidth() - 220, 40, 20, WHITE);
-        DrawText(TextFormat("FRAME TIME: %.2f ms", smoothedFrameTime), GetScreenWidth() - 220, 65, 20, WHITE); 
+        // DrawText(TextFormat("FRAME TIME: %.2f ms", smoothedFrameTime), GetScreenWidth() - 220, 65, 20, WHITE); 
 
         EndDrawing();
     }
