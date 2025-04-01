@@ -1,8 +1,6 @@
 #include <raylib.h>
 #include <vector>
 #include <cmath>
-#include <fstream>
-#include <chrono>
 #include <thread>
 #include <mutex>
 #include <atomic>
@@ -14,20 +12,11 @@ struct Particle {
     Color color;
 };
 
-struct FrameLogEntry {
-    float time;
-    float frameTime;
-    bool isMultithreaded;
-};
-
 const int screenWidth = 800;
 const int screenHeight = 600;
 const int particleCount = 10000;
-const float loggingDuration = 30.0f;
 
 std::vector<Particle> particles;
-std::vector<FrameLogEntry> frameTimeLog;
-
 std::mutex logMutex;
 std::atomic<bool> stopThreads(false);
 std::atomic<float> deltaTime(0.016f);
@@ -112,8 +101,6 @@ int main() {
     InitParticles();
     SetTargetFPS(0);
 
-    auto startLoggingTime = std::chrono::high_resolution_clock::now();
-
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_SPACE)) {
             isMultithreaded = !isMultithreaded;
@@ -136,14 +123,6 @@ int main() {
         auto frameEndTime = std::chrono::high_resolution_clock::now();
         float frameTime = std::chrono::duration<float, std::milli>(frameEndTime - frameStartTime).count();
 
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float elapsedTime = std::chrono::duration<float>(currentTime - startLoggingTime).count();
-
-        {
-            std::lock_guard<std::mutex> lock(logMutex);
-            frameTimeLog.push_back({elapsedTime, frameTime, isMultithreaded});
-        }
-
         BeginDrawing();
         ClearBackground(BLACK);
 
@@ -151,26 +130,15 @@ int main() {
             DrawCircleV(p.position, p.radius, p.color);
         }
 
-        DrawText(TextFormat("Mode: %s", isMultithreaded ? "Multithreaded" : "Single-threaded"), 10, 10, 20, WHITE);
+        DrawText(TextFormat("Mode: %s", isMultithreaded ? "Multi-threaded" : "Single-threaded"), 10, 10, 20, WHITE);
         DrawText(TextFormat("Particles: %d", particleCount), 10, 40, 20, WHITE);
         DrawText(TextFormat("Frame Time: %.2f ms", frameTime), 10, 70, 20, WHITE);
         DrawText("Press SPACE to toggle threading mode", 10, 100, 20, YELLOW);
 
         EndDrawing();
-
-        if (elapsedTime >= loggingDuration) break;
     }
 
     if (isMultithreaded) StopThreads();
-
-    // Save combined log
-    std::ofstream outFile("particle_frametime_both.csv");
-    outFile << "Time (s),Frame Time (ms),Mode\n";
-    for (const auto& entry : frameTimeLog) {
-        outFile << entry.time << "," << entry.frameTime << "," 
-                << (entry.isMultithreaded ? "Multi" : "Single") << "\n";
-    }
-    outFile.close();
 
     CloseWindow();
     return 0;
