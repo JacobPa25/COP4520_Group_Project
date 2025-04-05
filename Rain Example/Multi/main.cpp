@@ -11,6 +11,7 @@
 #define SCREEN_HEIGHT 600
 #define RAIN_COUNT 25000
 
+// Single raindrop position and speed
 struct Raindrop {
     Vector2 position;
     float speed;
@@ -21,12 +22,14 @@ std::vector<Raindrop> rainRender;
 std::mutex rainMutex;
 bool running = true;
 
+// Initialize all raindrops
 void InitRain() {
     for (int i = 0; i < RAIN_COUNT; i++) {
         rain.push_back({{(float)(rand() % SCREEN_WIDTH), (float)(rand() % SCREEN_HEIGHT)}, 300.0f + (rand() % 200)});
     }
 }
 
+// Multi-threading for updating raindrop positions
 void UpdateRainPhysics() {
     while (running) {
         float dt = GetFrameTime();
@@ -43,6 +46,7 @@ void UpdateRainPhysics() {
     }
 }
 
+// Draw the raindrops thread-safe
 void DrawRain() {
     std::lock_guard<std::mutex> lock(rainMutex);
     rainRender = rain;
@@ -61,6 +65,8 @@ int main() {
     fpsFile << "Time, FPS\n";
 
     double startTime = GetTime();
+
+    // Main simulation loop
     while (!WindowShouldClose()) {
         double elapsedTime = GetTime() - startTime;
         if (elapsedTime >= 30.0) break;
@@ -76,6 +82,7 @@ int main() {
         EndDrawing();
     }
 
+    // Ensure the thread is safely stopped on exit
     running = false;
     physicsThread.join();
     fpsFile.close();

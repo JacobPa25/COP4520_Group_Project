@@ -9,6 +9,7 @@
 #define SCREEN_HEIGHT 600
 #define RAIN_COUNT 25000
 
+// Single raindrop position and speed
 struct Raindrop {
     Vector2 position;
     float speed;
@@ -16,12 +17,14 @@ struct Raindrop {
 
 std::vector<Raindrop> rain;
 
+// Initialize all raindrops
 void InitRain() {
     for (int i = 0; i < RAIN_COUNT; i++) {
         rain.push_back({{(float)(rand() % SCREEN_WIDTH), (float)(rand() % SCREEN_HEIGHT)}, 300.0f + (rand() % 200)});
     }
 }
 
+// Update the position of each raindrop based on speed and time
 void UpdateRain(float dt) {
     for (auto &drop : rain) {
         drop.position.y += drop.speed * dt;
@@ -31,6 +34,7 @@ void UpdateRain(float dt) {
     }
 }
 
+// Draw each raindrop
 void DrawRain() {
     for (const auto &drop : rain) {
         DrawLineV(drop.position, {drop.position.x, drop.position.y + 10}, BLUE);
@@ -46,6 +50,8 @@ int main() {
     fpsFile << "Time, FPS\n";
 
     double startTime = GetTime();
+
+    // Main simulation loop that runs for 30 seconds
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
         int currentFPS = GetFPS();

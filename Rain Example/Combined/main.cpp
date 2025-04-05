@@ -10,6 +10,7 @@
 #define SCREEN_HEIGHT 600
 #define RAIN_COUNT 25000
 
+// Single raindrop position and speed
 struct Raindrop {
     Vector2 position;
     float speed;
@@ -26,6 +27,7 @@ float smoothedFps = 0.0f;
 float smoothedFrameTime = 0.0f;
 const float alpha = 0.1f;
 
+// Initialize all raindrops
 void InitRain() {
     rain.clear();
     for (int i = 0; i < RAIN_COUNT; i++) {
@@ -33,6 +35,7 @@ void InitRain() {
     }
 }
 
+// Update raindrops single-threaded
 void UpdateRainSingle(float dt) {
     for (auto &drop : rain) {
         drop.position.y += drop.speed * dt;
@@ -42,6 +45,7 @@ void UpdateRainSingle(float dt) {
     }
 }
 
+// Update raindrops multi-threaded
 void UpdateRainMulti() {
     while (running) {
         float dt = GetFrameTime();
@@ -58,6 +62,7 @@ void UpdateRainMulti() {
     }
 }
 
+// Draw the raindrops thread-safe
 void DrawRain() {
     if (multiThreaded) {
         std::lock_guard<std::mutex> lock(rainMutex);
@@ -77,7 +82,9 @@ int main() {
     InitRain();
     std::thread physicsThread;
 
+    // Main simulation loop
     while (!WindowShouldClose()) {
+        // Toggle between single and multi-threaded mode using spacebar
         if (IsKeyPressed(KEY_SPACE)) {
             multiThreaded = !multiThreaded;
             InitRain();
@@ -109,11 +116,11 @@ int main() {
         DrawText("Press SPACE to switch modes", 10, 70, 20, RED);
         
         DrawText(TextFormat("CURRENT FPS: %.1f", smoothedFps), GetScreenWidth() - 220, 40, 20, WHITE);
-        // DrawText(TextFormat("FRAME TIME: %.2f ms", smoothedFrameTime), GetScreenWidth() - 220, 65, 20, WHITE); 
 
         EndDrawing();
     }
     
+    // Ensure the thread is safely stopped on exit
     running = false;
     if (physicsThread.joinable()) physicsThread.join();
     CloseWindow();
