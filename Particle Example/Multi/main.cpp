@@ -8,6 +8,7 @@
 #include <mutex>
 #include <atomic>
 
+// Single particle position, velocity, radius and color
 struct Particle {
     Vector2 position;
     Vector2 velocity;

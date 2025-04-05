@@ -5,6 +5,7 @@
 #include <mutex>
 #include <atomic>
 
+// Single particle position, velocity, radius and color
 struct Particle {
     Vector2 position;
     Vector2 velocity;
@@ -17,13 +18,19 @@ const int screenHeight = 600;
 const int particleCount = 10000;
 
 std::vector<Particle> particles;
+
+// Mutex for logging
 std::mutex logMutex;
+
+// Stop flag for threads
 std::atomic<bool> stopThreads(false);
+
 std::atomic<float> deltaTime(0.016f);
 std::vector<std::thread> threads;
 int numThreads;
 bool isMultithreaded = false;
 
+// Initialize particles
 void InitParticles() {
     particles.clear();
     particles.reserve(particleCount);
@@ -38,6 +45,7 @@ void InitParticles() {
     }
 }
 
+// Update particles position single-threaded
 void UpdateParticlesSingle(float delta) {
     for (auto& p : particles) {
         p.position.x += p.velocity.x * delta;
@@ -52,9 +60,11 @@ void UpdateParticlesSingle(float delta) {
     }
 }
 
+// Update subset of particles
 void UpdateParticlesChunk(int start, int end, float delta) {
     for (int i = start; i < end; i++) {
         Particle& p = particles[i];
+
         p.position.x += p.velocity.x * delta;
         p.position.y += p.velocity.y * delta;
 
@@ -67,6 +77,7 @@ void UpdateParticlesChunk(int start, int end, float delta) {
     }
 }
 
+// Worker thread function
 void WorkerThread(int start, int end) {
     while (!stopThreads) {
         UpdateParticlesChunk(start, end, deltaTime.load());
@@ -74,6 +85,7 @@ void WorkerThread(int start, int end) {
     }
 }
 
+// Start and stopping of threads to handle simulation
 void StartThreads() {
     numThreads = std::thread::hardware_concurrency();
     if (numThreads == 0) numThreads = 4;
@@ -102,6 +114,7 @@ int main() {
     SetTargetFPS(0);
 
     while (!WindowShouldClose()) {
+        // Toggle single and mulit-threading with space
         if (IsKeyPressed(KEY_SPACE)) {
             isMultithreaded = !isMultithreaded;
 

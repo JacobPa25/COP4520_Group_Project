@@ -5,6 +5,7 @@
 #include <fstream>
 #include <chrono>
 
+// Single particle position, velocity, radius and color
 struct Particle {
     Vector2 position;
     Vector2 velocity;
@@ -12,7 +13,7 @@ struct Particle {
     Color color;
 };
 
-// Particles
+// Update particles position single-threaded
 void UpdateParticles(std::vector<Particle>& particles, float screenWidth, float screenHeight, float deltaTime) {
     for (auto& p : particles) {
         // Position
